@@ -1,1 +1,1 @@
-include ':gauss-bitmap'
+include ':gauss-native'
