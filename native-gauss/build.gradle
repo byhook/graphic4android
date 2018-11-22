@@ -45,4 +45,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile rootProject.ext.dependencies["appcompat-v7"]
     compile rootProject.ext.dependencies["design"]
+    compile project(':common')
 }

@@ -1,2 +1,2 @@
 include ':common', ':native-jpeg-turbo'
-include ':gauss-native'
+include ':native-gauss'
