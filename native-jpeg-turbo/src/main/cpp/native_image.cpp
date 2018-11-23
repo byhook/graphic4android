@@ -65,6 +65,13 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     return JNI_VERSION_1_6;
 }
 
+void ThrowException(JNIEnv *env, const char *exception, const char *message) {
+    jclass clazz = env->FindClass(exception);
+    if (NULL != clazz) {
+        env->ThrowNew(clazz, message);
+    }
+}
+
 int drawJPEG(const char *input_filename, ANativeWindow_Buffer &nwBuffer) {
 
     jpeg_decompress_struct jpegInfo;
@@ -137,20 +144,38 @@ void loadJPEGImage(JNIEnv *env, jobject obj, jstring jpegPath, jobject surface) 
     const char *path = env->GetStringUTFChars(jpegPath, 0);
     //获取目标surface
     ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
+    if (NULL == window) {
+        ThrowException(env, "java/lang/RuntimeException", "unable to get native window");
+        return;
+    }
     //默认的是RGB_565
-    ANativeWindow_setBuffersGeometry(window, 0, 0, WINDOW_FORMAT_RGBA_8888);
+    int32_t result = ANativeWindow_setBuffersGeometry(window, 0, 0, WINDOW_FORMAT_RGBA_8888);
+    if (result < 0) {
+        ThrowException(env, "java/lang/RuntimeException", "unable to set buffers geometry");
+        //释放窗口
+        ANativeWindow_release(window);
+        window = NULL;
+        return;
+    }
     ANativeWindow_acquire(window);
 
     ANativeWindow_Buffer buffer;
     //锁定窗口的绘图表面
-    ANativeWindow_lock(window, &buffer, NULL);
-
-
+    if (ANativeWindow_lock(window, &buffer, NULL) < 0) {
+        ThrowException(env, "java/lang/RuntimeException", "unable to lock native window");
+        //释放窗口
+        ANativeWindow_release(window);
+        window = NULL;
+        return;
+    }
+    //绘制JPEG图片
     drawJPEG(path, buffer);
 
     //解锁窗口的绘图表面
-    ANativeWindow_unlockAndPost(window);
-
+    if (ANativeWindow_unlockAndPost(window) < 0) {
+        ThrowException(env, "java/lang/RuntimeException",
+                       "unable to unlock and post to native window");
+    }
 
     env->ReleaseStringUTFChars(jpegPath, path);
     //释放
