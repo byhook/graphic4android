@@ -8,8 +8,7 @@
 extern "C" {
 #endif
 
-JNIEXPORT void JNICALL yuv2rgb(JNIEnv *, jobject, jstring, jint, jint, jobject);
-
+JNIEXPORT void JNICALL yuv2rgb(JNIEnv *, jobject, jstring, jint, jint, jint, jobject);
 
 #ifdef __cplusplus
 }

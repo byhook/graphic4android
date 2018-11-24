@@ -13,7 +13,15 @@ public class NativeYUV2RGB {
         System.loadLibrary("native-yuv2rgb");
     }
 
-    public native void yuv2rgb(String imagePath, int width, int height, Surface surface);
+    /**
+     * 转换类型
+     */
+    public interface Type {
+        int YUV420P_TO_RGB24 = 0;
+        int NV12_TO_RGB24 = 1;
+        int NV21_TO_RGB24 = 2;
+    }
 
+    public native void yuv2rgb(String imagePath, int type, int width, int height, Surface surface);
 
 }

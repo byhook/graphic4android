@@ -27,7 +27,7 @@
  * 动态注册
  */
 JNINativeMethod methods[] = {
-        {"yuv2rgb", "(Ljava/lang/String;IILandroid/view/Surface;)V", (void *) yuv2rgb}
+        {"yuv2rgb", "(Ljava/lang/String;IIILandroid/view/Surface;)V", (void *) yuv2rgb}
 };
 
 /**
@@ -68,18 +68,31 @@ void ThrowException(JNIEnv *env, const char *exception, const char *message) {
     }
 }
 
-void YUV2RGB(unsigned char *data, unsigned char *rgb, int width, int height) {
+enum Type {
+    TYPE_YUV420P_TO_RGB24 = 0,
+    TYPE_NV12_TO_RGB24 = 1,
+    TYPE_NV21_TO_RGB24 = 2
+};
+
+/**
+ * YUV420P转RGB24
+ * @param data
+ * @param rgb
+ * @param width
+ * @param height
+ */
+void YUV420P_TO_RGB24(unsigned char *data, unsigned char *rgb, int width, int height) {
     int index = 0;
+    unsigned char *ybase = data;
+    unsigned char *ubase = &data[width * height];
+    unsigned char *vbase = &data[width * height * 5 / 4];
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
+            //YYYYYYYYUUVV
+            u_char Y = ybase[x + y * width];
+            u_char U = ubase[y / 2 * width / 2 + (x / 2)];
+            u_char V = vbase[y / 2 * width / 2 + (x / 2)];
 
-            int indexY = y * width + x;
-            int indexU = width * height + y / 2 * width / 2 + x / 2;
-            int indexV = width * height + width * height / 4 + y / 2 * width / 2 + x / 2;
-
-            u_char Y = data[indexY];
-            u_char U = data[indexU];
-            u_char V = data[indexV];
 
             rgb[index++] = Y + 1.402 * (V - 128); //R
             rgb[index++] = Y - 0.34413 * (U - 128) - 0.71414 * (V - 128); //G
@@ -88,7 +101,58 @@ void YUV2RGB(unsigned char *data, unsigned char *rgb, int width, int height) {
     }
 }
 
-void drawYUV420P(const char *path, int width, int height, ANativeWindow_Buffer buffer) {
+/**
+ * NV12属于YUV420SP格式
+ * @param data
+ * @param rgb
+ * @param width
+ * @param height
+ */
+void NV12_TO_RGB24(unsigned char *data, unsigned char *rgb, int width, int height) {
+    int index = 0;
+    unsigned char *ybase = data;
+    unsigned char *ubase = &data[width * height];
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            //YYYYYYYYUVUV
+            u_char Y = ybase[x + y * width];
+            u_char U = ubase[y / 2 * width + (x / 2) * 2];
+            u_char V = ubase[y / 2 * width + (x / 2) * 2 + 1];
+
+            rgb[index++] = Y + 1.402 * (V - 128); //R
+            rgb[index++] = Y - 0.34413 * (U - 128) - 0.71414 * (V - 128); //G
+            rgb[index++] = Y + 1.772 * (U - 128); //B
+        }
+    }
+}
+
+/**
+ * NV12属于YUV420SP格式,android相机默认格式
+ * @param data
+ * @param rgb
+ * @param width
+ * @param height
+ */
+void NV21_TO_RGB24(unsigned char *data, unsigned char *rgb, int width, int height) {
+    int index = 0;
+
+    unsigned char *ybase = data;
+    unsigned char *ubase = &data[width * height];
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            //YYYYYYYYVUVU
+            u_char Y = ybase[x + y * width];
+            u_char U = ubase[y / 2 * width + (x / 2) * 2 + 1];
+            u_char V = ubase[y / 2 * width + (x / 2) * 2];
+
+            rgb[index++] = Y + 1.402 * (V - 128); //R
+            rgb[index++] = Y - 0.34413 * (U - 128) - 0.71414 * (V - 128); //G
+            rgb[index++] = Y + 1.772 * (U - 128); //B
+        }
+    }
+}
+
+void drawYUV(const char *path, int type, int width, int height, ANativeWindow_Buffer buffer) {
     FILE *file = fopen(path, "rb");
 
     unsigned char *yuvData = new unsigned char[width * height * 3 / 2];
@@ -98,7 +162,20 @@ void drawYUV420P(const char *path, int width, int height, ANativeWindow_Buffer b
     unsigned char *rgb24 = new unsigned char[width * height * 3];
 
     //YUV转RGB24
-    YUV2RGB(yuvData, rgb24, width, height);
+    switch (type) {
+        case TYPE_YUV420P_TO_RGB24:
+            //YUV420P转RGB24
+            YUV420P_TO_RGB24(yuvData, rgb24, width, height);
+            break;
+        case TYPE_NV12_TO_RGB24:
+            //YUV420SP转RGB24
+            NV12_TO_RGB24(yuvData, rgb24, width, height);
+            break;
+        case TYPE_NV21_TO_RGB24:
+            //YUV420SP转RGB24
+            NV21_TO_RGB24(yuvData, rgb24, width, height);
+            break;
+    }
 
     uint32_t *line = (uint32_t *) buffer.bits;
     for (int y = 0; y < height; y++) {
@@ -119,9 +196,10 @@ void drawYUV420P(const char *path, int width, int height, ANativeWindow_Buffer b
     fclose(file);
 }
 
-void yuv2rgb(JNIEnv *env, jobject obj, jstring jpegPath, jint width, jint height, jobject surface) {
+void yuv2rgb(JNIEnv *env, jobject obj, jstring yuvPath, jint type, jint width, jint height,
+             jobject surface) {
 
-    const char *path = env->GetStringUTFChars(jpegPath, 0);
+    const char *path = env->GetStringUTFChars(yuvPath, 0);
 
     //获取目标surface
     ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
@@ -151,7 +229,7 @@ void yuv2rgb(JNIEnv *env, jobject obj, jstring jpegPath, jint width, jint height
     }
 
     //绘制YUV420P
-    drawYUV420P(path, width, height, buffer);
+    drawYUV(path, type, width, height, buffer);
 
     //解锁窗口的绘图表面
     if (ANativeWindow_unlockAndPost(window) < 0) {
@@ -159,7 +237,7 @@ void yuv2rgb(JNIEnv *env, jobject obj, jstring jpegPath, jint width, jint height
                        "unable to unlock and post to native window");
     }
 
-    env->ReleaseStringUTFChars(jpegPath, path);
+    env->ReleaseStringUTFChars(yuvPath, path);
     //释放
     ANativeWindow_release(window);
 }

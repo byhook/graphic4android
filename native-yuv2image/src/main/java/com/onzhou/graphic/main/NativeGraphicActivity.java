@@ -47,7 +47,7 @@ public class NativeGraphicActivity extends AbsBaseActivity implements AssertRele
     }
 
     @Override
-    public void onReleaseSuccess(String filePath) {
+    public void onReleaseComplete() {
 
     }
 }

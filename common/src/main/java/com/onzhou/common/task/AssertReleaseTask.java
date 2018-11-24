@@ -14,18 +14,40 @@ public class AssertReleaseTask extends AsyncTask<Void, Void, String> {
 
     private WeakReference<Context> weakContext;
 
-    private String fileName;
+    private String[] fileNames;
 
     private ReleaseCallback releaseCallback;
 
+    public AssertReleaseTask(Context context, String fileNames[], ReleaseCallback releaseCallback) {
+        this.weakContext = new WeakReference<>(context);
+        this.fileNames = fileNames;
+        this.releaseCallback = releaseCallback;
+    }
+
     public AssertReleaseTask(Context context, String fileName, ReleaseCallback releaseCallback) {
         this.weakContext = new WeakReference<>(context);
-        this.fileName = fileName;
+        this.fileNames = new String[1];
+        this.fileNames[0] = fileName;
         this.releaseCallback = releaseCallback;
     }
 
     @Override
     protected String doInBackground(Void... voids) {
+        Context appContext = weakContext.get();
+        if (appContext != null && fileNames != null) {
+            for (String fileName : fileNames) {
+                releaseAsserts(fileName);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 释放Asserts目录下指定文件
+     * @param fileName
+     * @return
+     */
+    private String releaseAsserts(String fileName) {
         InputStream inputStream = null;
         FileOutputStream fos = null;
         try {
@@ -55,7 +77,7 @@ public class AssertReleaseTask extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(String filePath) {
         super.onPostExecute(filePath);
         if (releaseCallback != null) {
-            releaseCallback.onReleaseSuccess(filePath);
+            releaseCallback.onReleaseComplete();
         }
     }
 
@@ -71,7 +93,7 @@ public class AssertReleaseTask extends AsyncTask<Void, Void, String> {
 
     public interface ReleaseCallback {
 
-        void onReleaseSuccess(String filePath);
+        void onReleaseComplete();
 
     }
 

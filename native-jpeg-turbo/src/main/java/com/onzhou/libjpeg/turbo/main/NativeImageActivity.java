@@ -58,7 +58,7 @@ public class NativeImageActivity extends AbsBaseActivity implements AssertReleas
     }
 
     @Override
-    public void onReleaseSuccess(String filePath) {
+    public void onReleaseComplete() {
 
     }
 }

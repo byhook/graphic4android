@@ -58,7 +58,7 @@ public class NativePngActivity extends AbsBaseActivity implements AssertReleaseT
     }
 
     @Override
-    public void onReleaseSuccess(String filePath) {
+    public void onReleaseComplete() {
 
     }
 
