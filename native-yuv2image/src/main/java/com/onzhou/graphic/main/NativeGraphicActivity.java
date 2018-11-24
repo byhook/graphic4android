@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.onzhou.common.base.AbsBaseActivity;
 import com.onzhou.common.task.AssertReleaseTask;
-import com.onzhou.graphic.yuv2image.NativeYUV2JPEG;
+import com.onzhou.graphic.yuv2image.NativeYUV2IMAGE;
 import com.onzhou.graphic.yuv2image.R;
 
 import java.io.File;
@@ -22,7 +22,7 @@ public class NativeGraphicActivity extends AbsBaseActivity implements AssertRele
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_native_yuv2jpeg);
+        setContentView(R.layout.activity_native_yuv2image);
     }
 
     @Override
@@ -33,10 +33,17 @@ public class NativeGraphicActivity extends AbsBaseActivity implements AssertRele
     }
 
     public void onTransferJPEG(View view) {
-        NativeYUV2JPEG yuv420p2jpeg = new NativeYUV2JPEG();
+        NativeYUV2IMAGE yuv420p2jpeg = new NativeYUV2IMAGE();
         File yuvFile = new File(getExternalFilesDir(null), "input.yuv");
         File jpegFile = new File(getExternalFilesDir(null), "output.jpeg");
         yuv420p2jpeg.yuv2jpeg(yuvFile.getAbsolutePath(), jpegFile.getAbsolutePath(), 510, 510);
+    }
+
+    public void onTransferPNG(View view){
+        NativeYUV2IMAGE yuv2image = new NativeYUV2IMAGE();
+        File yuvFile = new File(getExternalFilesDir(null), "input.yuv");
+        File jpegFile = new File(getExternalFilesDir(null), "output.png");
+        yuv2image.yuv2png(yuvFile.getAbsolutePath(), jpegFile.getAbsolutePath(), 510, 510);
     }
 
     @Override

@@ -8,13 +8,15 @@
 
 #include "native_yuv2image.h"
 #include "native_yuv2jpeg.h"
+#include "native_yuv2png.h"
 
 
 /**
  * 动态注册
  */
 JNINativeMethod methods[] = {
-        {"yuv2jpeg", "(Ljava/lang/String;Ljava/lang/String;II)V", (void *) yuv2jpeg}
+        {"yuv2jpeg", "(Ljava/lang/String;Ljava/lang/String;II)V", (void *) yuv2jpeg},
+        {"yuv2png", "(Ljava/lang/String;Ljava/lang/String;II)V", (void *) yuv2png}
 };
 
 /**
@@ -23,7 +25,7 @@ JNINativeMethod methods[] = {
  * @return
  */
 jint registerNativeMethod(JNIEnv *env) {
-    jclass cl = env->FindClass("com/onzhou/graphic/yuv2image/NativeYUV2JPEG");
+    jclass cl = env->FindClass("com/onzhou/graphic/yuv2image/NativeYUV2IMAGE");
     if ((env->RegisterNatives(cl, methods, sizeof(methods) / sizeof(methods[0]))) < 0) {
         return -1;
     }
@@ -59,4 +61,17 @@ yuv2jpeg(JNIEnv *env, jobject obj, jstring jyuvPath, jstring jjpegPath, jint wid
     env->ReleaseStringUTFChars(jyuvPath, yuvPath);
     env->ReleaseStringUTFChars(jjpegPath, jpegPath);
 }
+
+void
+yuv2png(JNIEnv *env, jobject obj, jstring jyuvPath, jstring jjpegPath, jint width, jint height) {
+
+    const char *yuvPath = env->GetStringUTFChars(jyuvPath, 0);
+    const char *jpegPath = env->GetStringUTFChars(jjpegPath, 0);
+
+    YUV2PNG::YUV420P_TO_PNG(yuvPath, jpegPath, width, height);
+
+    env->ReleaseStringUTFChars(jyuvPath, yuvPath);
+    env->ReleaseStringUTFChars(jjpegPath, jpegPath);
+}
+
 

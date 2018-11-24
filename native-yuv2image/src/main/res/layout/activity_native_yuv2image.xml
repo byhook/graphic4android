@@ -11,4 +11,10 @@
         android:onClick="onTransferJPEG"
         android:text="YUV转换为JPEG" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onTransferPNG"
+        android:text="YUV转换为PNG" />
+
 </LinearLayout>

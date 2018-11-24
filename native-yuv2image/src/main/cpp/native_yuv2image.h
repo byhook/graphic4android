@@ -10,6 +10,8 @@ extern "C" {
 
 JNIEXPORT void JNICALL yuv2jpeg(JNIEnv *, jobject, jstring, jstring, jint, jint);
 
+JNIEXPORT void JNICALL yuv2png(JNIEnv *, jobject, jstring, jstring, jint, jint);
+
 
 #ifdef __cplusplus
 }
