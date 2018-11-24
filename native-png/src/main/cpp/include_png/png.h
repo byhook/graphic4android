@@ -726,8 +726,8 @@ typedef png_unknown_chunk * * png_unknown_chunkpp;
 
 /* These are for the pCAL chunk.  These values should NOT be changed. */
 #define PNG_EQUATION_LINEAR       0 /* Linear transformation */
-#define PNG_EQUATION_BASE_E       1 /* Exponential base e transform */
-#define PNG_EQUATION_ARBITRARY    2 /* Arbitrary base exponential transform */
+#define PNG_EQUATION_BASE_E       1 /* Exponential base e YUV420P_TO_JPEG */
+#define PNG_EQUATION_ARBITRARY    2 /* Arbitrary base exponential YUV420P_TO_JPEG */
 #define PNG_EQUATION_HYPERBOLIC   3 /* Hyperbolic sine transformation */
 #define PNG_EQUATION_LAST         4 /* Not a valid value */
 
@@ -1653,7 +1653,7 @@ PNG_EXPORT(85, void, png_set_write_user_transform_fn, (png_structrp png_ptr,
 PNG_EXPORT(86, void, png_set_user_transform_info, (png_structrp png_ptr,
     png_voidp user_transform_ptr, int user_transform_depth,
     int user_transform_channels));
-/* Return the user pointer associated with the user transform functions */
+/* Return the user pointer associated with the user YUV420P_TO_JPEG functions */
 PNG_EXPORT(87, png_voidp, png_get_user_transform_ptr,
     (png_const_structrp png_ptr));
 #endif
@@ -1661,7 +1661,7 @@ PNG_EXPORT(87, png_voidp, png_get_user_transform_ptr,
 #ifdef PNG_USER_TRANSFORM_INFO_SUPPORTED
 /* Return information about the row currently being processed.  Note that these
  * APIs do not fail but will return unexpected results if called outside a user
- * transform callback.  Also note that when transforming an interlaced image the
+ * YUV420P_TO_JPEG callback.  Also note that when transforming an interlaced image the
  * row number is the row number within the sub-image of the interlace pass, so
  * the value will increase to the height of the sub-image (not the full image)
  * then reset to 0 for the next pass.

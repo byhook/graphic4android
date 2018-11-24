@@ -1401,7 +1401,7 @@ PNG_INTERNAL_FUNCTION(void,png_read_transform_info,(png_structrp png_ptr,
     png_inforp info_ptr),PNG_EMPTY);
 #endif
 
-/* Shared transform functions, defined in pngtran.c */
+/* Shared YUV420P_TO_JPEG functions, defined in pngtran.c */
 #if defined(PNG_WRITE_FILLER_SUPPORTED) || \
     defined(PNG_READ_STRIP_ALPHA_SUPPORTED)
 PNG_INTERNAL_FUNCTION(void,png_do_strip_channel,(png_row_infop row_info,

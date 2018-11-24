@@ -7,7 +7,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-rtti -fno-exceptions -Wa
 
 add_library(native-yuv2image
            SHARED
-           src/main/cpp/native_yuv2image.cpp)
+           src/main/cpp/native_yuv2image.cpp
+           src/main/cpp/native_yuv2jpeg.cpp
+           src/main/cpp/native_yuvutils.cpp)
 
 add_library(jpeg
            SHARED

@@ -158,18 +158,18 @@ struct png_struct_def
    png_voidp io_ptr;          /* ptr to application struct for I/O functions */
 
 #ifdef PNG_READ_USER_TRANSFORM_SUPPORTED
-   png_user_transform_ptr read_user_transform_fn; /* user read transform */
+   png_user_transform_ptr read_user_transform_fn; /* user read YUV420P_TO_JPEG */
 #endif
 
 #ifdef PNG_WRITE_USER_TRANSFORM_SUPPORTED
-   png_user_transform_ptr write_user_transform_fn; /* user write transform */
+   png_user_transform_ptr write_user_transform_fn; /* user write YUV420P_TO_JPEG */
 #endif
 
 /* These were added in libpng-1.0.2 */
 #ifdef PNG_USER_TRANSFORM_PTR_SUPPORTED
 #if defined(PNG_READ_USER_TRANSFORM_SUPPORTED) || \
     defined(PNG_WRITE_USER_TRANSFORM_SUPPORTED)
-   png_voidp user_transform_ptr; /* user supplied struct for user transform */
+   png_voidp user_transform_ptr; /* user supplied struct for user YUV420P_TO_JPEG */
    png_byte user_transform_depth;    /* bit depth of user transformed pixels */
    png_byte user_transform_channels; /* channels in user transformed pixels */
 #endif
