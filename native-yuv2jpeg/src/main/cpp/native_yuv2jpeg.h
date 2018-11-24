@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-JNIEXPORT void JNICALL loadPNGImage(JNIEnv *, jobject, jstring, jobject);
+JNIEXPORT void JNICALL yuv2jpeg(JNIEnv *, jobject, jstring, jstring, jint, jint);
 
 
 #ifdef __cplusplus

@@ -2,8 +2,8 @@
 #include <jni.h>
 /* Header for class com_onzhou_opengles_color_NativeColorRenderer */
 
-#ifndef COM_ONZHOU_OPENGLES_COLOR_NATIVECOLORRENDERER
-#define COM_ONZHOU_OPENGLES_COLOR_NATIVECOLORRENDERER
+#ifndef NATIVE_YUV2JPEG_H
+#define NATIVE_YUV2JPEG_H
 #ifdef __cplusplus
 extern "C" {
 #endif
