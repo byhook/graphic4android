@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/native_yub2rgb_root_layer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_yuv420p"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="onYUV420PToRGB24"
+        android:text="YUV420P转RGB24" />
+
+    <Button
+        android:id="@+id/btn_nv12"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="onNV12ToRGB24"
+        android:text="NV12转RGB24" />
+
+
+    <Button
+        android:id="@+id/btn_nv21"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="onNV21ToRGB24"
+        android:text="NV21转RGB24" />
+
+</LinearLayout>
